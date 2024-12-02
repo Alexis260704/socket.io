@@ -247,10 +247,10 @@
 </head>
 <body>
   <div class="selection-container" id="username-selection">
-    <h1>Bienvenido </h1>
+    <h1>Bienvenido</h1>
     <div id="username-section">
-      <label for="username">Ingresa su usuario:</label>
-      <input type="text" id="username" placeholder="Your username">
+      <label for="username">Ingresa tu usuario:</label>
+      <input type="text" id="username" placeholder="Tu nombre de usuario">
       <button onclick="nextStep()">Next</button>
     </div>
   </div>
@@ -280,8 +280,8 @@
       <ul id="messages" class="messages"></ul>
       <div id="typing" class="typing"></div>
       <form id="form">
-        <input id="input" autocomplete="off" placeholder="Type a message..." />
-        <button type="submit"><i class="fas fa-paper-plane"></i> Send</button>
+        <input id="input" autocomplete="off" placeholder="Escribe un mensaje..." />
+        <button type="submit"><i class="fas fa-paper-plane"></i> Enviar</button>
       </form>
     </div>
   </div>
@@ -300,21 +300,25 @@
     const chatContainer = document.getElementById('chat-container');
 
     let roomName;
+    let username = localStorage.getItem('username');
 
     function nextStep() {
-      const username = document.getElementById('username').value;
-      if (username.trim() !== '') {
+      const enteredUsername = document.getElementById('username').value;
+      if (enteredUsername.trim() !== '') {
+        username = enteredUsername;
         localStorage.setItem('username', username);
         currentUsername.textContent = `Logged in as: ${username}`;
         usernameSelection.style.display = 'none';
         chatContainer.style.display = 'flex';
       } else {
-        alert('Please enter a username.');
+        alert('Por favor ingrese un nombre de usuario.');
       }
     }
 
-    const username = localStorage.getItem('username');
-    currentUsername.textContent = `Logged in as: ${username}`;
+    // Mostrar nombre de usuario al cargar
+    if (username) {
+      currentUsername.textContent = `Logged in as: ${username}`;
+    }
 
     function selectChat(target) {
       roomName = target;
@@ -363,7 +367,7 @@
     });
 
     socket.on('typing', (username) => {
-      typing.textContent = `${username} is typing...`;
+      typing.textContent = `${username} está escribiendo...`;
       setTimeout(() => {
         typing.textContent = '';
       }, 2000);
