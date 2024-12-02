@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.IO Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Estilos para la interfaz */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0d0d0d, #1a1a1a, #262626);
+      color: #e0e0e0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      height: 90vh;
+      display: flex;
+      background: linear-gradient(135deg, #1f1f1f, #2a2a2a, #3b3b3b);
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 30%;
+      border-right: 1px solid #444;
+      overflow-y: auto;
+      background-color: #3b3b3b;
+    }
+
+    .chat-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .chat-item {
+      padding: 15px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      border-bottom: 1px solid #444;
+    }
+
+    .chat-item:hover {
+      background-color: #5a5a5a;
+    }
+
+    .chat-item h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #d1c4e9;
+    }
+
+    .chat-content {
+      width: 70%;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(135deg, #1c1c1c, #262626, #333333);
+    }
+
+    .chat-header {
+      background-color: #673ab7;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-header .username {
+      font-size: 1rem;
+      color: #d1c4e9;
+      margin-right: 10px;
+    }
+
+    .messages {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #262626;
+      border-bottom: 1px solid #444;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .messages li {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .messages .profile-pic {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .messages .message-content {
+      padding: 12px 18px;
+      border-radius: 15px;
+      font-size: 1rem;
+      word-wrap: break-word;
+      max-width: 75%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .messages .user-message {
+      flex-direction: row-reverse;
+      text-align: right;
+    }
+
+    .messages .user-message .profile-pic {
+      margin-right: 0;
+      margin-left: 10px;
+    }
+
+    .messages .user-message .message-content {
+      background-color: #9575cd;
+      color: #fff;
+    }
+
+    .messages .other-message .message-content {
+      background-color: #d1c4e9;
+      color: #000;
+    }
+
+    .messages .system .message-content {
+      background-color: #444;
+      font-style: italic;
+      text-align: center;
+      color: #b3b3b3;
+    }
+
+    .typing {
+      color: #777;
+      font-size: 0.9rem;
+      font-style: italic;
+      text-align: center;
+    }
+
+    #form {
+      display: flex;
+      padding: 15px;
+      background-color: #3b3b3b;
+      border-top: 1px solid #444;
+    }
+
+    #input {
+      flex-grow: 1;
+      padding: 12px;
+      font-size: 1rem;
+      border: 1px solid #555;
+      border-radius: 25px;
+      margin-right: 12px;
+      background-color: #444;
+      color: #fff;
+    }
+
+    #input:focus {
+      outline: none;
+      border-color: #673ab7;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 1rem;
+      background-color: #673ab7;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #482880;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <ul class="chat-list">
+        <li class="chat-item" onclick="selectChat('Java')">
+          <h3>Java</h3>
+        </li>
+        <li class="chat-item" onclick="selectChat('CSS')">
+          <h3>CSS</h3>
+        </li>
+        <li class="chat-item" onclick="selectChat('Ingrador')">
+          <h3>Ingrador</h3>
+        </li>
+        <li class="chat-item" onclick="selectChat('Web')">
+          <h3>Web</h3>
+        </li>
+      </ul>
+    </div>
+    <div class="chat-content">
+      <div class="chat-header" id="chat-header">
+        <span id="header-title"></span>
+        <span class="username" id="current-username"></span>
+      </div>
+      <ul id="messages" class="messages"></ul>
+      <div id="typing" class="typing"></div>
+      <form id="form">
+        <input id="input" autocomplete="off" placeholder="Type a message..." />
+        <button type="submit"><i class="fas fa-paper-plane"></i> Send</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+    const typing = document.getElementById('typing');
+    const chatHeader = document.getElementById('chat-header');
+    const headerTitle = document.getElementById('header-title');
+    const currentUsername = document.getElementById('current-username');
+
+    // Obtener nombre de usuario desde el almacenamiento local
+    const username = localStorage.getItem('username');
+    currentUsername.textContent = `Logged in as: ${username}`;
+
+    // Variable para almacenar el nombre de la sala
+    let roomName;
+
+    // Función para seleccionar un chat y unirse a la sala
+    function selectChat(target) {
+      roomName = target;
+      headerTitle.textContent = target;
+      socket.emit('join room', { name: username, roomName: target });
+      messages.innerHTML = ''; // Limpiar mensajes anteriores
+    }
+
+    input.addEventListener('input', () => {
+      socket.emit('typing', username);
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = input.value.trim();
+      if (message) {
+        socket.emit('chat message', { username, message, roomName });
+        input.value = '';
+      }
+    });
+
+    socket.on('chat message', (data) => {
+      const li = document.createElement('li');
+      li.classList.add(data.username === username ? 'user-message' : 'other-message');
+
+      const img = document.createElement('img');
+      img.src = `https://robohash.org/${data.username}.png`;
+      img.classList.add('profile-pic');
+
+      const content = document.createElement('div');
+      content.classList.add('message-content');
+      content.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+
+      img.onload = () => {
+        li.appendChild(img);
+        li.appendChild(content);
+        messages.appendChild(li);
+        messages.scrollTop = messages.scrollHeight;
+      };
+      
+      img.onerror = () => {
+        li.appendChild(content);
+        messages.appendChild(li);
+        messages.scrollTop = messages.scrollHeight;
+      };
+      img.onerror = () => {
+        li.appendChild(content);
+        messages.appendChild(li);
+        messages.scrollTop = messages.scrollHeight;
+      };
+    });
+
+    socket.on('typing', (username) => {
+      typing.textContent = `${username} is typing...`;
+      setTimeout(() => {
+        typing.textContent = '';
+      }, 2000);
+    });
+  </script>
+</body>
+</html>

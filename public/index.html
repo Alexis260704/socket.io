@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Username</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #1f1f1f;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .selection-container {
+      width: 90%;
+      max-width: 400px;
+      background-color: #2a2a2a;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #b3b3b3;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #b3b3b3;
+    }
+
+    input {
+      width: calc(100% - 40px);
+      padding: 12px;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      border: 1px solid #555;
+      border-radius: 25px;
+      background-color: #444;
+      color: #fff;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #6200ea;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 1rem;
+      background-color: #6200ea;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #3700b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="selection-container">
+    <h1>Welcome to the Chat</h1>
+    <div id="username-section">
+      <label for="username">Enter your username:</label>
+      <input type="text" id="username" placeholder="Your username">
+      <button onclick="nextStep()">Next</button>
+    </div>
+  </div>
+
+  <script>
+    function nextStep() {
+      const username = document.getElementById('username').value;
+      if (username.trim() !== '') {
+        localStorage.setItem('username', username);
+        window.location.href = 'chat.html';
+      } else {
+        alert('Please enter a username.');
+      }
+    }
+  </script>
+</body>
+</html>
