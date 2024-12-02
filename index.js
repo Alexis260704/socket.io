@@ -1,9 +1,9 @@
 const express = require('express');
 const { createServer } = require('node:http');
-const { join } = require('node:path');
 const { Server } = require('socket.io');
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
+const path = require('path');
 
 // Crear la base de datos SQLite (si no existe) y añadir columna `room` si no existe
 async function setupDatabase() {
@@ -33,8 +33,8 @@ async function main() {
   const server = createServer(app);
   const io = new Server(server);
 
-  // Servir el archivo HTML desde la carpeta 'public'
-  app.use(express.static('public')); // Esto servirá todos los archivos dentro de la carpeta 'public'
+  // Servir los archivos estáticos (HTML, CSS, JS) desde el directorio raíz
+  app.use(express.static(path.join(__dirname))); // Servir archivos estáticos desde el directorio actual
 
   // Ruta para eliminar todos los datos de la tabla `messages`
   app.get('/delete-messages', async (req, res) => {

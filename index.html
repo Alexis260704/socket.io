@@ -10,7 +10,7 @@
     /* Estilos para la interfaz */
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0d0d0d, #1a1a1a, #262626);
+      background: #1f1f1f;
       color: #e0e0e0;
       margin: 0;
       padding: 0;
@@ -189,10 +189,73 @@
     button:hover {
       background-color: #482880;
     }
+
+    /* Estilos para la selección de usuario */
+    .selection-container {
+      width: 90%;
+      max-width: 400px;
+      background-color: #2a2a2a;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #b3b3b3;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #b3b3b3;
+    }
+
+    input {
+      width: calc(100% - 40px);
+      padding: 12px;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      border: 1px solid #555;
+      border-radius: 25px;
+      background-color: #444;
+      color: #fff;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #6200ea;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 1rem;
+      background-color: #6200ea;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #3700b3;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="selection-container" id="username-selection">
+    <h1>Bienvenido </h1>
+    <div id="username-section">
+      <label for="username">Ingresa su usuario:</label>
+      <input type="text" id="username" placeholder="Your username">
+      <button onclick="nextStep()">Next</button>
+    </div>
+  </div>
+
+  <div class="container" id="chat-container" style="display: none;">
     <div class="sidebar">
       <ul class="chat-list">
         <li class="chat-item" onclick="selectChat('Java')">
@@ -226,7 +289,6 @@
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
   <script>
     const socket = io();
-
     const form = document.getElementById('form');
     const input = document.getElementById('input');
     const messages = document.getElementById('messages');
@@ -234,15 +296,26 @@
     const chatHeader = document.getElementById('chat-header');
     const headerTitle = document.getElementById('header-title');
     const currentUsername = document.getElementById('current-username');
+    const usernameSelection = document.getElementById('username-selection');
+    const chatContainer = document.getElementById('chat-container');
 
-    // Obtener nombre de usuario desde el almacenamiento local
+    let roomName;
+
+    function nextStep() {
+      const username = document.getElementById('username').value;
+      if (username.trim() !== '') {
+        localStorage.setItem('username', username);
+        currentUsername.textContent = `Logged in as: ${username}`;
+        usernameSelection.style.display = 'none';
+        chatContainer.style.display = 'flex';
+      } else {
+        alert('Please enter a username.');
+      }
+    }
+
     const username = localStorage.getItem('username');
     currentUsername.textContent = `Logged in as: ${username}`;
 
-    // Variable para almacenar el nombre de la sala
-    let roomName;
-
-    // Función para seleccionar un chat y unirse a la sala
     function selectChat(target) {
       roomName = target;
       headerTitle.textContent = target;
@@ -282,11 +355,6 @@
         messages.scrollTop = messages.scrollHeight;
       };
       
-      img.onerror = () => {
-        li.appendChild(content);
-        messages.appendChild(li);
-        messages.scrollTop = messages.scrollHeight;
-      };
       img.onerror = () => {
         li.appendChild(content);
         messages.appendChild(li);
