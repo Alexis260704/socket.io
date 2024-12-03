@@ -4,7 +4,7 @@ const { Server } = require('socket.io');
 const { MongoClient } = require('mongodb');
 const path = require('path');
 
-// URI de conexión a MongoDB Atlas
+// URI de conexión a MongoDB Atlas (aquí la incluyes directamente en el código)
 const uri = "mongodb+srv://alexisbravoalan:5714784@javachat.2vy42.mongodb.net/?retryWrites=true&w=majority&appName=javachat";
 
 // Inicializar Express y Socket.IO
