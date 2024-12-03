@@ -4,8 +4,8 @@ const { Server } = require('socket.io');
 const { MongoClient } = require('mongodb');
 const path = require('path');
 
-// URI de conexión a MongoDB Atlas (incluyendo ssl=true para forzar la conexión segura)
-const uri = "mongodb+srv://alexisbravoalan:5714784@javachat.2vy42.mongodb.net/javachat?retryWrites=true&w=majority&ssl=true&appName=javachat";
+// URI de conexión a MongoDB Atlas
+const uri = "mongodb+srv://alexisbravoalan:5714784@javachat.2vy42.mongodb.net/?retryWrites=true&w=majority&appName=javachat";
 
 // Inicializar Express y Socket.IO
 const app = express();
@@ -15,10 +15,10 @@ const io = new Server(server);
 // Variable para almacenar la conexión a la base de datos
 let db;
 
-// Conectar a MongoDB Atlas una vez
+// Conectar a MongoDB Atlas
 const connectToDb = async () => {
   try {
-    const client = new MongoClient(uri, { ssl: true }); // Solo pasamos ssl:true
+    const client = new MongoClient(uri);
     await client.connect();
     console.log("Conectado a MongoDB Atlas");
 
@@ -26,6 +26,7 @@ const connectToDb = async () => {
     db = client.db('javachat');
   } catch (err) {
     console.error("Error de conexión a MongoDB", err);
+    process.exit(1);  // Si no se puede conectar, terminamos el proceso
   }
 };
 
@@ -111,6 +112,7 @@ io.on('connection', (socket) => {
 });
 
 // Iniciar el servidor
-server.listen(4000, () => {
-  console.log('Servidor corriendo en http://localhost:4000');
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
