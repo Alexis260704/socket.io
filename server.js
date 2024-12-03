@@ -4,8 +4,8 @@ const { Server } = require('socket.io');
 const { MongoClient } = require('mongodb');
 const path = require('path');
 
-// URI de conexión a MongoDB Atlas (aquí la incluyes directamente en el código)
-const uri = "mongodb+srv://alexisbravoalan:5714784@javachat.2vy42.mongodb.net/?retryWrites=true&w=majority&appName=javachat";
+// URI de conexión a MongoDB Atlas (incluyendo ssl=true para forzar la conexión segura)
+const uri = "mongodb+srv://alexisbravoalan:5714784@javachat.2vy42.mongodb.net/javachat?retryWrites=true&w=majority&ssl=true&appName=javachat";
 
 // Inicializar Express y Socket.IO
 const app = express();
@@ -18,7 +18,7 @@ let db;
 // Conectar a MongoDB Atlas una vez
 const connectToDb = async () => {
   try {
-    const client = new MongoClient(uri);
+    const client = new MongoClient(uri, { ssl: true }); // Solo pasamos ssl:true
     await client.connect();
     console.log("Conectado a MongoDB Atlas");
 
